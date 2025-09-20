@@ -38,6 +38,10 @@ from .consts import ECOMMERCE_MCP_SERVER_APPLICATION_NAME
 from .tools.ecommerce_tools import (
     browse_products_tool, get_category_counts_tool
 )
+from .tools.delivery_tools import (
+    get_delivery_routes_tool, get_orders_for_delivery_tool, get_delivery_slots_tool,
+    get_delivery_drivers_tool, get_delivery_metrics_tool
+)
 
 
 def create_server() -> FastMCP:
@@ -52,9 +56,18 @@ def create_server() -> FastMCP:
     browse_products_tool(mcp)
     get_category_counts_tool(mcp)
     
+    # Register delivery tools
+    logger.info("Registering Delivery Portal MCP tools...")
+    
+    get_delivery_routes_tool(mcp)
+    get_orders_for_delivery_tool(mcp)
+    get_delivery_slots_tool(mcp)
+    get_delivery_drivers_tool(mcp)
+    get_delivery_metrics_tool(mcp)
+    
     # Note: Resource handlers removed for simplicity
     # The e-commerce tools are available directly via the registered @mcp.tool decorators
-    logger.info("E-commerce MCP Server initialized successfully")
+    logger.info("E-commerce and Delivery Portal MCP Server initialized successfully")
     return mcp
 
 
@@ -73,7 +86,7 @@ async def main():
     logger.info(f"Starting {ECOMMERCE_MCP_SERVER_APPLICATION_NAME}")
     
     # Log configuration information
-    logger.info("E-commerce MCP Server Configuration:")
+    logger.info("E-commerce and Delivery Portal MCP Server Configuration:")
     logger.info(f"  - Log Level: {log_level}")
     logger.info(f"  - AWS Region: {os.getenv('AWS_REGION', 'ap-south-1')}")
     
@@ -81,7 +94,7 @@ async def main():
     try:
         server = create_server()
         
-        logger.info("E-commerce MCP Server is ready to process requests")
+        logger.info("E-commerce and Delivery Portal MCP Server is ready to process requests")
         
         # Try to run the server, handling asyncio loop conflicts
         try:
@@ -105,9 +118,9 @@ async def main():
                 raise
         
     except KeyboardInterrupt:
-        logger.info("Shutting down E-commerce MCP Server...")
+        logger.info("Shutting down E-commerce and Delivery Portal MCP Server...")
     except Exception as e:
-        logger.error(f"Error running E-commerce MCP Server: {str(e)}")
+        logger.error(f"Error running E-commerce and Delivery Portal MCP Server: {str(e)}")
         raise
 
 
