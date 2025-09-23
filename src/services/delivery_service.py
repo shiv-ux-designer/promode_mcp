@@ -26,10 +26,10 @@ class DeliveryService:
         self.dynamodb = boto3.resource('dynamodb', region_name=self.region_name)
         
         # Initialize table references
-        orders_table_name = os.getenv('ORDERS_TABLE_NAME', 'EcommerceApp-Orders')
-        delivery_table_name = os.getenv('DELIVERY_TABLE_NAME', 'EcommerceApp-Delivery')
-        logistics_table_name = os.getenv('LOGISTICS_TABLE_NAME', 'EcommerceApp-Logistics')
-        staff_table_name = os.getenv('STAFF_TABLE_NAME', 'EcommerceApp-Staff')
+        orders_table_name = os.getenv('ORDERS_TABLE_NAME', 'AuroraSparkTheme-Orders')
+        delivery_table_name = os.getenv('DELIVERY_TABLE_NAME', 'AuroraSparkTheme-Delivery')
+        logistics_table_name = os.getenv('LOGISTICS_TABLE_NAME', 'AuroraSparkTheme-Logistics')
+        staff_table_name = os.getenv('STAFF_TABLE_NAME', 'AuroraSparkTheme-Staff')
         
         self.orders_table = self.dynamodb.Table(orders_table_name)
         self.delivery_table = self.dynamodb.Table(delivery_table_name)
@@ -474,8 +474,8 @@ class DeliveryService:
         """Process raw slot data from DynamoDB."""
         try:
             slot_info = raw_slot.get('slotInfo', {})
-            current_orders = slot_info.get('currentOrders', 0)
-            max_orders = slot_info.get('maxOrders', 10)
+            current_orders = int(slot_info.get('currentOrders', 0))
+            max_orders = int(slot_info.get('maxOrders', 10))
             
             return DeliverySlot(
                 slot_id=raw_slot.get('slotID', ''),

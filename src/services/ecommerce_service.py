@@ -26,10 +26,9 @@ class EcommerceService:
         self.dynamodb = boto3.resource('dynamodb', region_name=self.region_name)
         
         # Initialize table references
-        # Note: Ensure DynamoDB tables are renamed to match these names, or use environment variables
-        # to map to existing table names (e.g., PRODUCTS_TABLE_NAME='AuroraSparkTheme-Products')
-        products_table_name = os.getenv('PRODUCTS_TABLE_NAME', 'EcommerceApp-Products')
-        inventory_table_name = os.getenv('INVENTORY_TABLE_NAME', 'EcommerceApp-Inventory')
+        # Using AuroraSparkTheme tables that exist in the environment
+        products_table_name = os.getenv('PRODUCTS_TABLE_NAME', 'AuroraSparkTheme-Products')
+        inventory_table_name = os.getenv('INVENTORY_TABLE_NAME', 'AuroraSparkTheme-Inventory')
         
         self.products_table = self.dynamodb.Table(products_table_name)
         self.inventory_table = self.dynamodb.Table(inventory_table_name)

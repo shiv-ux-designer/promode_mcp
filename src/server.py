@@ -42,6 +42,18 @@ from .tools.delivery_tools import (
     get_delivery_routes_tool, get_orders_for_delivery_tool, get_delivery_slots_tool,
     get_delivery_drivers_tool, get_delivery_metrics_tool
 )
+from .tools.super_admin_tools import (
+    get_user_management_tool, get_system_health_tool, get_business_analytics_tool,
+    get_security_audit_tool, get_system_config_tool
+)
+from .tools.supplier_tools import (
+    get_supplier_management_tool, get_purchase_orders_tool, get_invoice_management_tool,
+    get_supplier_analytics_tool, get_product_catalog_tool
+)
+from .tools.warehouse_tools import (
+    get_inventory_management_tool, get_stock_movements_tool, get_warehouse_operations_tool,
+    get_inventory_analytics_tool, get_quality_control_tool
+)
 
 
 def create_server() -> FastMCP:
@@ -65,9 +77,36 @@ def create_server() -> FastMCP:
     get_delivery_drivers_tool(mcp)
     get_delivery_metrics_tool(mcp)
     
+    # Register super admin tools
+    logger.info("Registering Super Admin Portal MCP tools...")
+    
+    get_user_management_tool(mcp)
+    get_system_health_tool(mcp)
+    get_business_analytics_tool(mcp)
+    get_security_audit_tool(mcp)
+    get_system_config_tool(mcp)
+    
+    # Register supplier tools
+    logger.info("Registering Supplier Portal MCP tools...")
+    
+    get_supplier_management_tool(mcp)
+    get_purchase_orders_tool(mcp)
+    get_invoice_management_tool(mcp)
+    get_supplier_analytics_tool(mcp)
+    get_product_catalog_tool(mcp)
+    
+    # Register warehouse management tools
+    logger.info("Registering Warehouse Management Portal MCP tools...")
+    
+    get_inventory_management_tool(mcp)
+    get_stock_movements_tool(mcp)
+    get_warehouse_operations_tool(mcp)
+    get_inventory_analytics_tool(mcp)
+    get_quality_control_tool(mcp)
+    
     # Note: Resource handlers removed for simplicity
     # The e-commerce tools are available directly via the registered @mcp.tool decorators
-    logger.info("E-commerce and Delivery Portal MCP Server initialized successfully")
+    logger.info("E-commerce, Delivery Portal, Super Admin Portal, Supplier Portal, and Warehouse Management Portal MCP Server initialized successfully")
     return mcp
 
 
@@ -86,7 +125,7 @@ async def main():
     logger.info(f"Starting {ECOMMERCE_MCP_SERVER_APPLICATION_NAME}")
     
     # Log configuration information
-    logger.info("E-commerce and Delivery Portal MCP Server Configuration:")
+    logger.info("E-commerce, Delivery Portal, Super Admin Portal, Supplier Portal, and Warehouse Management Portal MCP Server Configuration:")
     logger.info(f"  - Log Level: {log_level}")
     logger.info(f"  - AWS Region: {os.getenv('AWS_REGION', 'ap-south-1')}")
     
@@ -94,28 +133,11 @@ async def main():
     try:
         server = create_server()
         
-        logger.info("E-commerce and Delivery Portal MCP Server is ready to process requests")
+        logger.info("E-commerce, Delivery Portal, Super Admin Portal, Supplier Portal, and Warehouse Management Portal MCP Server is ready to process requests")
         
-        # Try to run the server, handling asyncio loop conflicts
-        try:
-            await server.run()
-        except RuntimeError as e:
-            if "already running" in str(e).lower() or "cannot be called" in str(e).lower():
-                logger.warning("Asyncio event loop conflict detected - server tools are registered and functional")
-                logger.info("MCP tools are available for client connections")
-                
-                logger.info("Server is running and ready to accept MCP client connections...")
-                logger.info("Press Ctrl+C to stop the server")
-                
-                # Simple wait that responds to KeyboardInterrupt properly
-                try:
-                    while True:
-                        await asyncio.sleep(0.5)
-                except KeyboardInterrupt:
-                    logger.info("Server shutdown requested")
-                    raise
-            else:
-                raise
+        # Run the server in stdio mode for MCP communication
+        logger.info("Starting MCP server in stdio mode...")
+        await server.run_stdio_async()
         
     except KeyboardInterrupt:
         logger.info("Shutting down E-commerce and Delivery Portal MCP Server...")
